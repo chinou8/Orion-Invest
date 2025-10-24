@@ -7,6 +7,15 @@ const tendances = [
   { titre: "Asie émergente", variation: "-0,8%", statut: "Volatil" }
 ];
 
+const donneesIndice = Array.from({ length: 30 }, (_, index) => {
+  const base = 100;
+  const variation = Math.sin(index / 5) * 2 + index * 0.05;
+  return {
+    date: new Date(Date.now() - (29 - index) * 24 * 60 * 60 * 1000).toISOString(),
+    valeur: base + variation,
+  };
+});
+
 export default function TableauDeBord() {
   return (
     <div className="space-y-8">
@@ -23,7 +32,7 @@ export default function TableauDeBord() {
           description="Synthèse visuelle des indices suivis"
           footer="Sources : Yahoo Finance — données indicatives"
         >
-          <Chart titre="Indice composite" sousTitre="Performance glissante sur 7 jours" />
+          <Chart titre="Indice composite" sousTitre="Performance glissante sur 7 jours" points={donneesIndice} />
         </Card>
         <Card
           title="Alertes clés"

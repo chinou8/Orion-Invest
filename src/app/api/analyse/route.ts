@@ -43,14 +43,24 @@ export async function GET(request: Request) {
     }
 
     const clotures = closeSeries.map((item) => item.close);
-    const sma5 = calculerSMA(clotures, 5);
-    const sma20 = calculerSMA(clotures, 20);
-    const rsi14 = calculerRSI(clotures, 14);
-    const { score, label } = determinerScore({
-      clotures,
-      smaCourt: sma5,
-      smaLong: sma20,
-      rsi: rsi14
+    const sma5 = sma(clotures, 5);
+    const sma20 = sma(clotures, 20);
+    const rsi14 = rsi(clotures, 14);
+
+    const recentReturns: number[] = [];
+    for (let index = 1; index < clotures.length; index += 1) {
+      const previous = clotures[index - 1];
+      const current = clotures[index];
+      if (Number.isFinite(previous) && Number.isFinite(current) && previous !== 0) {
+        recentReturns.push((current - previous) / previous);
+      }
+    }
+
+    const { score, label } = scoreSignal({
+      sma5,
+      sma20,
+      rsi: rsi14,
+      recentReturns: recentReturns.slice(-5)
     });
 
     return NextResponse.json({
