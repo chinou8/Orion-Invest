@@ -2,17 +2,28 @@
 
 Application Next.js 14 (App Router) pour le suivi et l'analyse d'investissements.
 
-## Installation
+## Installation locale
 
 ```bash
-npm install
+npm install && npm run dev
 ```
 
-## Scripts npm
+## Build de production
+
+```bash
+npm run build
+```
+
+## Déploiement Vercel
+
+- Sélectionner le preset **Next.js**.
+- Ne pas définir manuellement de répertoire de sortie : Vercel utilisera automatiquement `.next`.
+
+## Scripts npm disponibles
 
 - `npm run dev` : lance le serveur de développement.
 - `npm run build` : construit l'application pour la production.
-- `npm run start` : démarre le serveur en mode production.
+- `npm run start` : démarre le serveur en mode production (port 3000).
 - `npm run lint` : exécute l'analyse statique.
 
 ## Aperçu
