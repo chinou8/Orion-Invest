@@ -5,7 +5,7 @@ import { Card } from "@/components/Card";
 
 type AnalyseResponse = {
   ticker: string;
-  closeSeries: number[];
+  closeSeries: { date: string; close: number }[];
   sma5: number[];
   sma20: number[];
   rsi14: number[];

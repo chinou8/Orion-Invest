@@ -27,27 +27,37 @@ export async function GET(request: Request) {
       period2: periodeFin
     });
 
-    const quotes = donnees?.quotes ?? [];
-    const closes = quotes
-      .map((item) => item.close)
-      .filter((valeur): valeur is number => typeof valeur === "number" && Number.isFinite(valeur))
-      .slice(-DUREE_JOURS);
+    const quotes = (donnees?.quotes ?? []).filter(
+      (item) =>
+        typeof item.close === "number" &&
+        Number.isFinite(item.close) &&
+        item.date instanceof Date &&
+        !Number.isNaN(item.date.getTime())
+    );
 
-    if (closes.length === 0) {
-      return NextResponse.json(
-        { message: "Aucune donnée de clôture disponible pour ce ticker." },
-        { status: 404 }
-      );
+    const closeSeries = quotes.map((item) => ({
+      date: item.date.toISOString(),
+      close: item.close as number
+    }));
+
+    if (closeSeries.length === 0) {
+      throw new Error("Aucune donnée exploitable renvoyée par Yahoo Finance");
     }
 
-    const sma5 = calculerSMA(closes, 5);
-    const sma20 = calculerSMA(closes, 20);
-    const rsi14 = calculerRSI(closes, 14);
-    const { score, label } = determinerScore({ clotures: closes, smaCourt: sma5, smaLong: sma20, rsi: rsi14 });
+    const clotures = closeSeries.map((item) => item.close);
+    const sma5 = calculerSMA(clotures, 5);
+    const sma20 = calculerSMA(clotures, 20);
+    const rsi14 = calculerRSI(clotures, 14);
+    const { score, label } = determinerScore({
+      clotures,
+      smaCourt: sma5,
+      smaLong: sma20,
+      rsi: rsi14
+    });
 
     return NextResponse.json({
       ticker: ticker.toUpperCase(),
-      closeSeries: closes,
+      closeSeries,
       sma5,
       sma20,
       rsi14,

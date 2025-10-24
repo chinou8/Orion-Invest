@@ -12,8 +12,10 @@ type ScoreInputs = {
   rsi: number[];
 };
 
+const clamp = (valeur: number, min: number, max: number) => Math.min(max, Math.max(min, valeur));
+
 /**
- * Calcule un score synthétique en combinant les tendances des SMA et du RSI.
+ * Calcule un score synthétique suivant la règle métier spécifiée.
  */
 export function determinerScore({
   clotures,
@@ -21,30 +23,46 @@ export function determinerScore({
   smaLong,
   rsi
 }: ScoreInputs): AnalyseScore {
-  const dernierCours = clotures.at(-1) ?? NaN;
-  const dernierSmaCourt = smaCourt.at(-1) ?? NaN;
-  const dernierSmaLong = smaLong.at(-1) ?? NaN;
-  const dernierRsi = rsi.at(-1) ?? 50;
+  const dernierSmaCourt = smaCourt.at(-1);
+  const dernierSmaLong = smaLong.at(-1);
+  const dernierRsi = rsi.at(-1);
 
-  const diffTrend =
-    Number.isFinite(dernierSmaCourt) && Number.isFinite(dernierSmaLong) && dernierSmaLong !== 0
-      ? ((dernierSmaCourt - dernierSmaLong) / dernierSmaLong) * 100
-      : 0;
+  let score = 50;
 
-  const momentum = ((dernierRsi - 50) / 50) * 100;
+  if (Number.isFinite(dernierSmaCourt) && Number.isFinite(dernierSmaLong)) {
+    score += (dernierSmaCourt as number) > (dernierSmaLong as number) ? 20 : -20;
+  }
 
-  const progression =
-    Number.isFinite(dernierCours) && Number.isFinite(dernierSmaCourt) && dernierCours !== 0
-      ? ((dernierCours - dernierSmaCourt) / dernierCours) * 100
-      : 0;
+  if (Number.isFinite(dernierRsi)) {
+    if ((dernierRsi as number) < 30) {
+      score += 10;
+    } else if ((dernierRsi as number) > 70) {
+      score -= 10;
+    }
+  }
 
-  const scoreBrut = diffTrend * 0.5 + momentum * 0.35 + progression * 0.15;
-  const score = Math.max(-100, Math.min(100, Number.isFinite(scoreBrut) ? scoreBrut : 0));
+  const variations: number[] = [];
+  for (let i = 1; i < clotures.length; i += 1) {
+    const precedent = clotures[i - 1];
+    const actuel = clotures[i];
+    if (Number.isFinite(precedent) && Number.isFinite(actuel) && precedent !== 0) {
+      variations.push((actuel - precedent) / precedent);
+    }
+  }
+
+  const variationsRecents = variations.slice(-5);
+  if (variationsRecents.length > 0) {
+    const moyenne =
+      variationsRecents.reduce((acc, valeur) => acc + valeur, 0) / variationsRecents.length;
+    score += clamp(moyenne * 100, -15, 15);
+  }
+
+  score = clamp(score, 0, 100);
 
   let label: ScoreLabel = "Stable / incertain";
-  if (score > 20) {
+  if (score >= 60) {
     label = "Hausse probable";
-  } else if (score < -20) {
+  } else if (score <= 40) {
     label = "Baisse probable";
   }
 
