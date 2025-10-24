@@ -15,6 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" className="dark">
+      <body className="bg-gray-950 text-gray-100 min-h-screen">
       <body className="bg-slate-950 text-slate-100">
         <div className="min-h-screen flex flex-col">
           <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur">
