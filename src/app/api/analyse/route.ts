@@ -17,9 +17,14 @@ export async function GET(request: Request) {
   }
 
   try {
+    const periodeFin = new Date();
+    const periodeDebut = new Date();
+    periodeDebut.setMonth(periodeDebut.getMonth() - 6);
+
     const donnees = await yahooFinance.chart(ticker, {
       interval: "1d",
-      range: "6mo"
+      period1: periodeDebut,
+      period2: periodeFin
     });
 
     const quotes = donnees?.quotes ?? [];
