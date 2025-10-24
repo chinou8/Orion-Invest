@@ -61,7 +61,7 @@ export function scoreSignal({
 
   score = clamp(score, 0, 100);
 
-  let label: SignalLabel = "Stable / incertain";
+  let label: ScoreLabel = "Stable / incertain";
   if (score >= 60) {
     label = "Hausse probable";
   } else if (score <= 40) {
