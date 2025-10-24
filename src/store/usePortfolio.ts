@@ -1,58 +1,111 @@
 import { create } from "zustand";
 
-type Position = {
+type PositionBase = {
   ticker: string;
   quantite: number;
-  prixMoyen: number;
+  prixAchat: number;
+  dernierPrix: number;
+};
+
+export type Position = PositionBase & {
+  valeur: number;
+  pnl: number;
 };
 
 type PortfolioState = {
   positions: Position[];
-  ajouterPosition: (position: Position) => void;
-  mettreAJourPosition: (ticker: string, miseAJour: Partial<Position>) => void;
+  setPositions: (positions: PositionBase[]) => void;
+  ajouterPosition: (position: PositionBase) => void;
   supprimerPosition: (ticker: string) => void;
   reinitialiser: () => void;
 };
 
 const normaliserTicker = (ticker: string) => ticker.trim().toUpperCase();
 
+const calculerPosition = (position: PositionBase): Position => {
+  const quantite = position.quantite;
+  const prixAchat = position.prixAchat;
+  const dernierPrix = position.dernierPrix;
+  const coutTotal = quantite * prixAchat;
+  const valeur = quantite * dernierPrix;
+
+  return {
+    ticker: normaliserTicker(position.ticker),
+    quantite,
+    prixAchat,
+    dernierPrix,
+    valeur,
+    pnl: valeur - coutTotal
+  };
+};
+
+const agregerPositions = (positions: PositionBase[]): Position[] => {
+  const regroupement = new Map<
+    string,
+    { quantite: number; coutTotal: number; dernierPrix: number }
+  >();
+
+  positions.forEach((position) => {
+    const ticker = normaliserTicker(position.ticker);
+    const quantite = position.quantite;
+    const prixAchat = position.prixAchat;
+    const dernierPrix = position.dernierPrix;
+
+    if (!Number.isFinite(quantite) || quantite <= 0) {
+      return;
+    }
+
+    const coutTotal = prixAchat * quantite;
+    const existant = regroupement.get(ticker);
+
+    if (existant) {
+      regroupement.set(ticker, {
+        quantite: existant.quantite + quantite,
+        coutTotal: existant.coutTotal + coutTotal,
+        dernierPrix
+      });
+    } else {
+      regroupement.set(ticker, { quantite, coutTotal, dernierPrix });
+    }
+  });
+
+  return Array.from(regroupement.entries()).map(([ticker, resume]) => {
+    const quantite = resume.quantite;
+    const prixAchat = quantite === 0 ? 0 : resume.coutTotal / quantite;
+
+    return calculerPosition({
+      ticker,
+      quantite,
+      prixAchat,
+      dernierPrix: resume.dernierPrix
+    });
+  });
+};
+
+const toBasePositions = (positions: Position[]): PositionBase[] =>
+  positions.map(({ ticker, quantite, prixAchat, dernierPrix }) => ({
+    ticker,
+    quantite,
+    prixAchat,
+    dernierPrix
+  }));
+
 export const usePortfolio = create<PortfolioState>((set) => ({
-  positions: [
-    { ticker: "AAPL", quantite: 12, prixMoyen: 154.2 },
-    { ticker: "MSFT", quantite: 6, prixMoyen: 295.4 }
-  ],
+  positions: [],
+  setPositions: (nouvellesPositions) =>
+    set({ positions: agregerPositions(nouvellesPositions) }),
   ajouterPosition: (position) =>
     set((state) => {
-      const ticker = normaliserTicker(position.ticker);
-      const existante = state.positions.find((p) => p.ticker === ticker);
-      if (existante) {
-        return {
-          positions: state.positions.map((p) =>
-            p.ticker === ticker
-              ? {
-                  ticker,
-                  quantite: p.quantite + position.quantite,
-                  prixMoyen:
-                    (p.prixMoyen * p.quantite + position.prixMoyen * position.quantite) /
-                    (p.quantite + position.quantite)
-                }
-              : p
-          )
-        };
-      }
+      const existantes = toBasePositions(state.positions);
       return {
-        positions: [...state.positions, { ...position, ticker }]
+        positions: agregerPositions([...existantes, position])
       };
     }),
-  mettreAJourPosition: (ticker, miseAJour) =>
-    set((state) => ({
-      positions: state.positions.map((p) =>
-        p.ticker === normaliserTicker(ticker) ? { ...p, ...miseAJour } : p
-      )
-    })),
   supprimerPosition: (ticker) =>
     set((state) => ({
-      positions: state.positions.filter((p) => p.ticker !== normaliserTicker(ticker))
+      positions: state.positions.filter(
+        (position) => position.ticker !== normaliserTicker(ticker)
+      )
     })),
   reinitialiser: () => set({ positions: [] })
 }));
