@@ -1,5 +1,13 @@
+import Link from "next/link";
+
 import { Card } from "@/components/Card";
 import { Chart } from "@/components/Chart";
+
+const tickers = [
+  { code: "MC.PA", nom: "LVMH" },
+  { code: "AIR.PA", nom: "Airbus" },
+  { code: "AAPL", nom: "Apple" },
+];
 
 const tendances = [
   { titre: "Technologie américaine", variation: "+2,4%", statut: "En hausse" },
@@ -19,6 +27,36 @@ const donneesIndice = Array.from({ length: 30 }, (_, index) => {
 export default function TableauDeBord() {
   return (
     <div className="space-y-8">
+      <Card
+        title="Bienvenue dans Orion Invest (web)"
+        description="Votre plateforme d'analyse et de suivi des marchés en temps réel."
+      >
+        <div className="space-y-6 text-sm md:text-base">
+          <p className="text-slate-300">
+            Explorez les tendances, surveillez vos positions et lancez une analyse approfondie en un
+            clic.
+          </p>
+          <div>
+            <h3 className="text-sm font-medium text-white uppercase tracking-wide mb-3">
+              Exemples de tickers
+            </h3>
+            <ul className="flex flex-wrap gap-3">
+              {tickers.map((ticker) => (
+                <li key={ticker.code}>
+                  <Link
+                    href={`/analyse?ticker=${encodeURIComponent(ticker.code)}`}
+                    className="inline-flex items-center rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs font-medium text-slate-200 transition-colors hover:border-primaire/60 hover:bg-primaire/10 hover:text-primaire"
+                  >
+                    <span className="mr-2 text-primaire">{ticker.code}</span>
+                    <span className="text-slate-400">{ticker.nom}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </Card>
+
       <section className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold text-white">Vue d'ensemble</h1>
         <p className="text-slate-400 text-sm md:text-base max-w-2xl">
@@ -67,6 +105,34 @@ export default function TableauDeBord() {
               <p className="text-xs text-slate-500">Statut : {tendance.statut}</p>
             </div>
           ))}
+        </div>
+      </Card>
+
+      <Card
+        title="Secteurs"
+        description="Performance simulée par grand secteur sur les 30 derniers jours."
+      >
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 text-sm">
+          <div className="rounded-lg border border-slate-800 bg-slate-950/40 p-4">
+            <p className="text-xs uppercase tracking-wide text-slate-500">Métaux</p>
+            <p className="mt-2 text-emerald-400 text-lg font-semibold">+4,2%</p>
+            <p className="text-slate-400 text-xs">Impulsion positive portée par l'aluminium.</p>
+          </div>
+          <div className="rounded-lg border border-slate-800 bg-slate-950/40 p-4">
+            <p className="text-xs uppercase tracking-wide text-slate-500">Technologie</p>
+            <p className="mt-2 text-emerald-300 text-lg font-semibold">+3,5%</p>
+            <p className="text-slate-400 text-xs">Appétit pour les valeurs IA et semi-conducteurs.</p>
+          </div>
+          <div className="rounded-lg border border-slate-800 bg-slate-950/40 p-4">
+            <p className="text-xs uppercase tracking-wide text-slate-500">Énergie</p>
+            <p className="mt-2 text-amber-300 text-lg font-semibold">+1,1%</p>
+            <p className="text-slate-400 text-xs">Rattrapage des majors européennes.</p>
+          </div>
+          <div className="rounded-lg border border-slate-800 bg-slate-950/40 p-4">
+            <p className="text-xs uppercase tracking-wide text-slate-500">Consommation</p>
+            <p className="mt-2 text-rose-300 text-lg font-semibold">-0,7%</p>
+            <p className="text-slate-400 text-xs">Pression sur le luxe et les biens discrétionnaires.</p>
+          </div>
         </div>
       </Card>
     </div>
