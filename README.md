@@ -18,6 +18,7 @@ npm run build
 
 - Sélectionner le preset **Next.js**.
 - Laisser le champ **Output Directory** vide : Vercel utilisera automatiquement `.next`.
+- Ne pas définir manuellement de répertoire de sortie : Vercel utilisera automatiquement `.next`.
 
 ## Scripts npm disponibles
 
