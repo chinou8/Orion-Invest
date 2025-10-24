@@ -1,65 +1,76 @@
 /**
- * Calcule la moyenne mobile simple (SMA) sur une série de prix.
+ * Calcule la moyenne mobile simple (SMA) pour une fenêtre donnée.
  */
-export function calculerSMA(valeurs: number[], periode: number): number[] {
-  if (periode <= 0) {
-    throw new Error("La période de la SMA doit être positive.");
+export function sma(values: number[], window: number): number[] {
+  if (window <= 0) {
+    throw new Error("La fenêtre de la SMA doit être strictement positive.");
   }
-  const resultat: number[] = [];
-  for (let i = 0; i < valeurs.length; i += 1) {
-    if (i + 1 < periode) {
-      resultat.push(NaN);
+
+  const result: number[] = [];
+
+  for (let index = 0; index < values.length; index += 1) {
+    if (index + 1 < window) {
+      result.push(NaN);
       continue;
     }
-    const segment = valeurs.slice(i + 1 - periode, i + 1);
-    const somme = segment.reduce((acc, valeur) => acc + valeur, 0);
-    resultat.push(somme / periode);
+
+    const slice = values.slice(index + 1 - window, index + 1);
+    const sum = slice.reduce((accumulator, value) => accumulator + value, 0);
+    result.push(sum / window);
   }
-  return resultat;
+
+  return result;
 }
 
 /**
- * Calcule l'indice de force relative (RSI) sur une série de prix de clôture.
+ * Calcule l'indice de force relative (RSI) sur une série de clôtures.
  */
-export function calculerRSI(valeurs: number[], periode = 14): number[] {
-  if (periode <= 0) {
-    throw new Error("La période du RSI doit être positive.");
+export function rsi(values: number[], window = 14): number[] {
+  if (window <= 0) {
+    throw new Error("La fenêtre du RSI doit être strictement positive.");
   }
-  if (valeurs.length === 0) {
+
+  if (values.length === 0) {
     return [];
   }
 
-  const resultat: number[] = Array(valeurs.length).fill(NaN);
-  if (valeurs.length <= periode) {
-    return resultat;
+  const result: number[] = Array(values.length).fill(NaN);
+
+  if (values.length <= window) {
+    return result;
   }
 
   const gains: number[] = [];
-  const pertes: number[] = [];
+  const losses: number[] = [];
 
-  for (let i = 1; i < valeurs.length; i += 1) {
-    const variation = valeurs[i] - valeurs[i - 1];
-    gains.push(Math.max(0, variation));
-    pertes.push(Math.max(0, -variation));
+  for (let index = 1; index < values.length; index += 1) {
+    const change = values[index] - values[index - 1];
+    gains.push(Math.max(0, change));
+    losses.push(Math.max(0, -change));
   }
 
-  let moyenneGain = gains.slice(0, periode).reduce((acc, valeur) => acc + valeur, 0) / periode;
-  let moyennePerte = pertes.slice(0, periode).reduce((acc, valeur) => acc + valeur, 0) / periode;
+  let averageGain =
+    gains.slice(0, window).reduce((accumulator, value) => accumulator + value, 0) /
+    window;
+  let averageLoss =
+    losses.slice(0, window).reduce((accumulator, value) => accumulator + value, 0) /
+    window;
 
-  for (let i = periode; i < valeurs.length; i += 1) {
-    const gain = gains[i - 1] ?? 0;
-    const perte = pertes[i - 1] ?? 0;
-    moyenneGain = (moyenneGain * (periode - 1) + gain) / periode;
-    moyennePerte = (moyennePerte * (periode - 1) + perte) / periode;
+  for (let index = window; index < values.length; index += 1) {
+    const gain = gains[index - 1] ?? 0;
+    const loss = losses[index - 1] ?? 0;
 
-    const index = i;
-    if (moyennePerte === 0) {
-      resultat[index] = 100;
-    } else {
-      const rs = moyenneGain / moyennePerte;
-      resultat[index] = 100 - 100 / (1 + rs);
+    averageGain = (averageGain * (window - 1) + gain) / window;
+    averageLoss = (averageLoss * (window - 1) + loss) / window;
+
+    if (averageLoss === 0) {
+      result[index] = 100;
+      continue;
     }
+
+    const relativeStrength = averageGain / averageLoss;
+    result[index] = 100 - 100 / (1 + relativeStrength);
   }
 
-  return resultat;
+  return result;
 }

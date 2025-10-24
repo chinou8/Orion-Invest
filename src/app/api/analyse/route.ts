@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import yahooFinance from "yahoo-finance2";
-import { calculerRSI, calculerSMA } from "@/lib/indicators";
-import { determinerScore } from "@/lib/prediction";
-
-const DUREE_JOURS = 60;
+import { rsi, sma } from "@/lib/indicators";
+import { scoreSignal } from "@/lib/prediction";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);

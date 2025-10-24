@@ -1,60 +1,62 @@
-export type ScoreLabel = "Hausse probable" | "Baisse probable" | "Stable / incertain";
+export type SignalLabel = "Hausse probable" | "Baisse probable" | "Stable / incertain";
 
-export type AnalyseScore = {
-  score: number;
-  label: ScoreLabel;
-};
-
-type ScoreInputs = {
-  clotures: number[];
-  smaCourt: number[];
-  smaLong: number[];
+export type ScoreSignalParams = {
+  sma5: number[];
+  sma20: number[];
   rsi: number[];
+  recentReturns: number[];
 };
 
-const clamp = (valeur: number, min: number, max: number) => Math.min(max, Math.max(min, valeur));
+export type ScoreSignalResult = {
+  score: number;
+  label: SignalLabel;
+};
+
+const clamp = (value: number, min: number, max: number): number =>
+  Math.min(max, Math.max(min, value));
+
+const lastFiniteValue = (values: number[]): number | undefined => {
+  for (let index = values.length - 1; index >= 0; index -= 1) {
+    const value = values[index];
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return value;
+    }
+  }
+  return undefined;
+};
 
 /**
- * Calcule un score synthétique suivant la règle métier spécifiée.
+ * Calcule le score et le libellé de signal selon la règle fournie.
  */
-export function determinerScore({
-  clotures,
-  smaCourt,
-  smaLong,
-  rsi
-}: ScoreInputs): AnalyseScore {
-  const dernierSmaCourt = smaCourt.at(-1);
-  const dernierSmaLong = smaLong.at(-1);
-  const dernierRsi = rsi.at(-1);
-
+export function scoreSignal({
+  sma5,
+  sma20,
+  rsi,
+  recentReturns
+}: ScoreSignalParams): ScoreSignalResult {
   let score = 50;
 
-  if (Number.isFinite(dernierSmaCourt) && Number.isFinite(dernierSmaLong)) {
-    score += (dernierSmaCourt as number) > (dernierSmaLong as number) ? 20 : -20;
+  const lastSma5 = lastFiniteValue(sma5);
+  const lastSma20 = lastFiniteValue(sma20);
+  if (lastSma5 !== undefined && lastSma20 !== undefined) {
+    score += lastSma5 > lastSma20 ? 20 : -20;
   }
 
-  if (Number.isFinite(dernierRsi)) {
-    if ((dernierRsi as number) < 30) {
+  const lastRsi = lastFiniteValue(rsi);
+  if (lastRsi !== undefined) {
+    if (lastRsi < 30) {
       score += 10;
-    } else if ((dernierRsi as number) > 70) {
+    } else if (lastRsi > 70) {
       score -= 10;
     }
   }
 
-  const variations: number[] = [];
-  for (let i = 1; i < clotures.length; i += 1) {
-    const precedent = clotures[i - 1];
-    const actuel = clotures[i];
-    if (Number.isFinite(precedent) && Number.isFinite(actuel) && precedent !== 0) {
-      variations.push((actuel - precedent) / precedent);
-    }
-  }
-
-  const variationsRecents = variations.slice(-5);
-  if (variationsRecents.length > 0) {
-    const moyenne =
-      variationsRecents.reduce((acc, valeur) => acc + valeur, 0) / variationsRecents.length;
-    score += clamp(moyenne * 100, -15, 15);
+  const finiteReturns = recentReturns.filter((value) => Number.isFinite(value));
+  if (finiteReturns.length > 0) {
+    const averageReturn =
+      finiteReturns.reduce((accumulator, value) => accumulator + value, 0) /
+      finiteReturns.length;
+    score += clamp(averageReturn * 100, -15, 15);
   }
 
   score = clamp(score, 0, 100);

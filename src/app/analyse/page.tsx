@@ -80,7 +80,7 @@ export default function PageAnalyse() {
       {donnees ? (
         <Card
           title={`Résultats pour ${donnees.ticker}`}
-          description="Résumé des indicateurs techniques calculés sur les 60 derniers jours."
+          description="Résumé des indicateurs techniques calculés sur les six derniers mois."
         >
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2 rounded-lg border border-slate-800 p-4">
