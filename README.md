@@ -14,6 +14,18 @@ npm install && npm run dev
 npm run build
 ```
 
+### Vérifications rapides avant push
+
+```bash
+npm run lint
+npm run build
+```
+
+- `npm run lint` utilise la configuration Next.js intégrée (non interactive en CI) et
+  valide les nouveaux modules d'analyse fondamentale et technique.
+- `npm run build` confirme la compatibilité Vercel (routes API serverless, absence de
+  dépendances natives) et l'absence d'accès disque côté edge.
+
 ## Déploiement Vercel
 
 - Sélectionner le preset **Next.js**.
