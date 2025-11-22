@@ -30,6 +30,9 @@ export default function RootLayout({
                 <Link className="hover:text-primaire transition" href="/portefeuille">
                   Portefeuille
                 </Link>
+                <Link className="hover:text-primaire transition" href="/screener">
+                  Screener
+                </Link>
               </div>
             </nav>
           </header>
