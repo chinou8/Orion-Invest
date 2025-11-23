@@ -1,5 +1,6 @@
-// Fichier : src/lib/analysis/types.ts
+// src/lib/analysis/types.ts
 
+// 1. Structure d'une bougie (Prix) - C'est ce qui manquait pour l'erreur
 export interface PriceCandle {
   date: string | Date;
   open: number;
@@ -9,6 +10,7 @@ export interface PriceCandle {
   volume: number;
 }
 
+// 2. Résultat général d'une analyse
 export interface AnalysisResult {
   symbol: string;
   price: number;
@@ -17,6 +19,7 @@ export interface AnalysisResult {
   recommendation: string;
 }
 
+// 3. Instantané technique (pour tes graphiques et indicateurs)
 export interface TechnicalSnapshot {
   smaShort: number | null;
   smaLong: number | null;
