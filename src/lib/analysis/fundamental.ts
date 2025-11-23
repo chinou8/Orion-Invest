@@ -14,7 +14,6 @@ export interface FundamentalAsset {
   roic: number;
   dividendYield: number;
   netDebtToEquity: number;
-  [key: string]: string | number | undefined;
 }
 
 export interface FundamentalScoreBreakdown {
