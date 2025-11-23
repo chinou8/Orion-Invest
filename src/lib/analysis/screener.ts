@@ -5,6 +5,9 @@ const applyNumericFilter = (asset: FundamentalAsset, filter: ScreenerNumericFilt
   if (!Number.isFinite(value)) {
     return false;
   }
+  if (value == null || filter.value == null) {
+    return false;
+  }
   switch (filter.operator) {
     case ">=":
       return value >= filter.value;
