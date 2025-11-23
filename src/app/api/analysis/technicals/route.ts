@@ -2,7 +2,16 @@ import { NextResponse } from "next/server";
 import yahooFinance from "yahoo-finance2";
 
 import { buildTechnicalSnapshot } from "@/lib/analysis/technical";
-import type { PriceCandle } from "@/lib/analysis/types";
+
+// Déclaration locale du type utilisé par cette route
+type PriceCandle = {
+  date: string | Date;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+};
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
