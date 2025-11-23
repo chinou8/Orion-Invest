@@ -60,14 +60,14 @@ export type ScoredAsset = {
 };
 
 // Technical analysis domain models
-export interface PriceCandle {
+export type PriceCandle = {
   date: string;
   open: number;
   high: number;
   low: number;
   close: number;
   volume: number;
-}
+};
 
 export type MACDResult = {
   macd: number[];
