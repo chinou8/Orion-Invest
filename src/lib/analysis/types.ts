@@ -1,57 +1,36 @@
-export type FundamentalAsset = {
-  isin: string;
-  ticker: string;
-  name: string;
-  country: string;
-  sector: string;
-  currency: string;
-  marketCap: number;
-  pe: number;
-  pb: number;
-  roe: number;
-  roic: number;
-  dividendYield: number;
-  netDebtToEquity: number;
-};
+// Fichier : src/lib/analysis/types.ts
 
-export type NumericField =
-  | "marketCap"
-  | "pe"
-  | "pb"
-  | "roe"
-  | "roic"
-  | "dividendYield"
-  | "netDebtToEquity";
+export interface PriceCandle {
+  date: string | Date;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
 
-export type StringField = "country" | "sector" | "currency";
+export interface AnalysisResult {
+  symbol: string;
+  price: number;
+  trend: 'HAUSSIER' | 'BAISSIER' | 'NEUTRE';
+  rsi: number;
+  recommendation: string;
+}
 
-export type NumericFilterOperator = ">=" | "<=" | ">" | "<";
-
-export type InclusionOperator = "in";
-
-export type ScreenerNumericFilter = {
-  field: NumericField;
-  operator: NumericFilterOperator;
-  value: number;
-};
-
-export type ScreenerInFilter = {
-  field: StringField;
-  operator: InclusionOperator;
-  value: string[];
-};
-
-export type ScreenerFilter = ScreenerNumericFilter | ScreenerInFilter;
-
-export type FundamentalScoreBreakdown = {
-  valuation: number;
-  profitability: number;
-  financialHealth: number;
-  dividend: number;
-};
-
-export type ScoredAsset = {
-  asset: FundamentalAsset;
-  score: number;
-  breakdown: FundamentalScoreBreakdown;
-};
+export interface TechnicalSnapshot {
+  smaShort: number | null;
+  smaLong: number | null;
+  ema: number | null;
+  rsi: number | null;
+  macd: {
+    macdLine: number;
+    signalLine: number;
+    histogram: number;
+  } | null;
+  bollinger: {
+    upper: number;
+    middle: number;
+    lower: number;
+  } | null;
+  signals: string[];
+}
