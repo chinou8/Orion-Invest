@@ -224,11 +224,14 @@ export default function ScreenerPage() {
               onChange={(event) => setCountry(event.target.value)}
             >
               <option value="">Tous</option>
-              {allCountries.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
+              {allCountries.map((option) => {
+                const value = String(option);
+                return (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                );
+              })}
             </select>
           </label>
         </div>
