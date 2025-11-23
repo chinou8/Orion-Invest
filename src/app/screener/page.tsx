@@ -75,7 +75,7 @@ export default function ScreenerPage() {
   const scoredAssets = useMemo(() => {
     const screened = runScreener(sampleAssets, filters);
     const scored = scoreAssets(screened);
-    return scored.filter((item) => item.score >= minScore);
+    return scored.filter((item) => (item.score ?? 0) >= minScore);
   }, [filters, minScore]);
 
   useEffect(() => {
