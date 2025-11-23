@@ -2,18 +2,24 @@ import { FundamentalAsset, ScreenerFilter, ScreenerInFilter, ScreenerNumericFilt
 
 const applyNumericFilter = (asset: FundamentalAsset, filter: ScreenerNumericFilter): boolean => {
   const value = asset[filter.field];
-  if (!Number.isFinite(value)) {
+  if (value == null || filter.value == null) {
+    return false;
+  }
+  const numericValue =
+    typeof value === "string" ? parseFloat(value) : value;
+
+  if (Number.isNaN(numericValue)) {
     return false;
   }
   switch (filter.operator) {
     case ">=":
-      return value >= filter.value;
+      return numericValue >= filter.value;
     case "<=":
-      return value <= filter.value;
+      return numericValue <= filter.value;
     case ">":
-      return value > filter.value;
+      return numericValue > filter.value;
     case "<":
-      return value < filter.value;
+      return numericValue < filter.value;
     default:
       return false;
   }

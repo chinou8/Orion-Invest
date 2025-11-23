@@ -19,7 +19,25 @@ export interface AnalysisResult {
   recommendation: string;
 }
 
-// 3. Instantané technique (pour graphiques et indicateurs)
+// 3. Indicateurs techniques
+export interface MACDResult {
+  macd: number[];
+  signal: number[];
+  histogram: number[];
+}
+
+export interface BollingerBands {
+  upper: number[];
+  middle: number[];
+  lower: number[];
+}
+
+export interface TechnicalSignals {
+  rsiSignal: "overbought" | "oversold" | "neutral";
+  movingAverageCross: "bullish" | "bearish" | "none";
+}
+
+// 4. Instantané technique (pour graphiques et indicateurs)
 export interface TechnicalSnapshot {
   smaShort: number | null;
   smaLong: number | null;
