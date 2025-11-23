@@ -93,7 +93,7 @@ export function scoreAsset(asset: FundamentalAsset): ScoredAsset {
       4
   );
 
-  return { asset, score, breakdown };
+  return { ...asset, score, breakdown };
 }
 
 export function scoreAssets(assets: FundamentalAsset[]): ScoredAsset[] {

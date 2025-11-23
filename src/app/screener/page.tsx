@@ -75,7 +75,7 @@ export default function ScreenerPage() {
   const scoredAssets = useMemo(() => {
     const screened = runScreener(sampleAssets, filters);
     const scored = scoreAssets(screened);
-    return scored.filter((item) => item.score >= minScore);
+    return scored.filter((item) => (item.score ?? 0) >= minScore);
   }, [filters, minScore]);
 
   useEffect(() => {
@@ -205,11 +205,14 @@ export default function ScreenerPage() {
               onChange={(event) => setSector(event.target.value)}
             >
               <option value="">Tous</option>
-              {allSectors.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
+              {allSectors.map((option) => {
+                const value = String(option);
+                return (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                );
+              })}
             </select>
           </label>
 
@@ -221,11 +224,14 @@ export default function ScreenerPage() {
               onChange={(event) => setCountry(event.target.value)}
             >
               <option value="">Tous</option>
-              {allCountries.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
+              {allCountries.map((option) => {
+                const value = String(option);
+                return (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                );
+              })}
             </select>
           </label>
         </div>
@@ -251,7 +257,7 @@ export default function ScreenerPage() {
               <p className="py-6 text-sm text-slate-400">Aucun actif ne correspond aux filtres en cours.</p>
             ) : (
               scoredAssets.map((item) => {
-                const { asset, score, breakdown } = item as ScoredAsset;
+                const { score, breakdown, ...asset } = item as ScoredAsset;
                 return (
                   <div
                     key={asset.isin}

@@ -19,35 +19,79 @@ export interface AnalysisResult {
   recommendation: string;
 }
 
-// 3. Instantané technique (pour graphiques et indicateurs)
+// 3. Indicateurs techniques
+export interface MACDResult {
+  macd: number[];
+  signal: number[];
+  histogram: number[];
+}
+
+export interface BollingerBands {
+  upper: number[];
+  middle: number[];
+  lower: number[];
+}
+
+export interface TechnicalSignals {
+  rsiSignal: "overbought" | "oversold" | "neutral";
+  movingAverageCross: "bullish" | "bearish" | "none";
+}
+
+// 4. Instantané technique (pour graphiques et indicateurs)
 export interface TechnicalSnapshot {
-  smaShort: number | null;
-  smaLong: number | null;
-  ema: number | null;
-  rsi: number | null;
-  macd:
-    | {
-        macdLine: number;
-        signalLine: number;
-        histogram: number;
-      }
-    | null;
-  bollinger:
-    | {
-        upper: number;
-        middle: number;
-        lower: number;
-      }
-    | null;
-  signals: string[];
+  closes: number[];
+  smaShort: number[];
+  smaLong: number[];
+  ema: number[];
+  rsi: number[];
+  macd: MACDResult;
+  bollinger: BollingerBands;
+  signals: TechnicalSignals;
 }
 
-// 4. Actif fondamental (type générique pour l'instant)
+// 5. Actif fondamental
 export interface FundamentalAsset {
-  [key: string]: unknown;
+  isin: string;
+  ticker: string;
+  name: string;
+  country: string;
+  sector: string;
+  currency: string;
+  marketCap: number;
+  pe: number;
+  pb: number;
+  roe: number;
+  roic: number;
+  dividendYield: number;
+  netDebtToEquity: number;
+  [key: string]: string | number | undefined;
 }
 
-// 5. Filtre de screener (type générique pour l'instant)
-export interface ScreenerFilter {
-  [key: string]: unknown;
+// 6. Décomposition du score fondamental
+export interface FundamentalScoreBreakdown {
+  valuation: number;
+  profitability: number;
+  financialHealth: number;
+  dividend: number;
+}
+
+// 7. Filtres du screener
+export type ScreenerNumericFilter = {
+  field: keyof FundamentalAsset;
+  operator: ">=" | "<=" | ">" | "<";
+  value: number;
+};
+
+export type ScreenerInFilter = {
+  field: keyof FundamentalAsset;
+  operator: "in";
+  value: string[];
+};
+
+export type ScreenerFilter = ScreenerNumericFilter | ScreenerInFilter;
+
+// 8. Actif fondamental avec score (utilisé par le screener)
+export interface ScoredAsset extends FundamentalAsset {
+  score: number;
+  breakdown: FundamentalScoreBreakdown;
 }
