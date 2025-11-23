@@ -1,4 +1,3 @@
-// Fundamental analysis domain models
 export type FundamentalAsset = {
   isin: string;
   ticker: string;
@@ -44,8 +43,6 @@ export type ScreenerInFilter = {
 
 export type ScreenerFilter = ScreenerNumericFilter | ScreenerInFilter;
 
-export type ScreenerFilters = ScreenerFilter[];
-
 export type FundamentalScoreBreakdown = {
   valuation: number;
   profitability: number;
@@ -57,42 +54,4 @@ export type ScoredAsset = {
   asset: FundamentalAsset;
   score: number;
   breakdown: FundamentalScoreBreakdown;
-};
-
-// Technical analysis domain models
-export type PriceCandle = {
-  date: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
-};
-
-export type MACDResult = {
-  macd: number[];
-  signal: number[];
-  histogram: number[];
-};
-
-export type BollingerBands = {
-  upper: number[];
-  middle: number[];
-  lower: number[];
-};
-
-export type TechnicalSignals = {
-  rsiSignal: "overbought" | "oversold" | "neutral";
-  movingAverageCross: "bullish" | "bearish" | "none";
-};
-
-export type TechnicalSnapshot = {
-  closes: number[];
-  smaShort: number[];
-  smaLong: number[];
-  ema: number[];
-  rsi: number[];
-  macd: MACDResult;
-  bollinger: BollingerBands;
-  signals: TechnicalSignals;
 };

@@ -8,8 +8,6 @@ import {
   TechnicalSnapshot
 } from "./types";
 
-export type { PriceCandle } from "./types";
-
 const extractCloses = (candles: PriceCandle[]): number[] =>
   candles.map((candle) => candle.close);
 
