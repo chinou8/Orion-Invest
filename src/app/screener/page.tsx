@@ -75,7 +75,7 @@ export default function ScreenerPage() {
   const scoredAssets = useMemo(() => {
     const screened = runScreener(sampleAssets, filters);
     const scored = scoreAssets(screened);
-    return scored.filter((item) => item.score >= minScore);
+    return scored.filter((item) => (item.score ?? 0) >= minScore);
   }, [filters, minScore]);
 
   useEffect(() => {
@@ -205,11 +205,14 @@ export default function ScreenerPage() {
               onChange={(event) => setSector(event.target.value)}
             >
               <option value="">Tous</option>
-              {allSectors.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
+              {allSectors.map((option) => {
+                const value = String(option);
+                return (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                );
+              })}
             </select>
           </label>
 

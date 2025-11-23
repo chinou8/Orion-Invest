@@ -51,3 +51,8 @@ export interface FundamentalAsset {
 export interface ScreenerFilter {
   [key: string]: unknown;
 }
+
+// 6. Actif fondamental avec score (utilisé par le screener)
+export interface ScoredAsset extends FundamentalAsset {
+  score?: number;
+}
