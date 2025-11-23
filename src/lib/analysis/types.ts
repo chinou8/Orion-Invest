@@ -1,5 +1,9 @@
 // src/lib/analysis/types.ts
 
+import type { FundamentalAsset, FundamentalScoreBreakdown } from "./fundamental";
+
+export type { FundamentalAsset, FundamentalScoreBreakdown } from "./fundamental";
+
 // 1. Structure d'une bougie (Prix)
 export interface PriceCandle {
   date: string | Date;
@@ -49,33 +53,7 @@ export interface TechnicalSnapshot {
   signals: TechnicalSignals;
 }
 
-// 5. Actif fondamental
-export interface FundamentalAsset {
-  isin: string;
-  ticker: string;
-  name: string;
-  country: string;
-  sector: string;
-  currency: string;
-  marketCap: number;
-  pe: number;
-  pb: number;
-  roe: number;
-  roic: number;
-  dividendYield: number;
-  netDebtToEquity: number;
-  [key: string]: string | number | undefined;
-}
-
-// 6. Décomposition du score fondamental
-export interface FundamentalScoreBreakdown {
-  valuation: number;
-  profitability: number;
-  financialHealth: number;
-  dividend: number;
-}
-
-// 7. Filtres du screener
+// 5. Filtres du screener
 export type ScreenerNumericFilter = {
   field: keyof FundamentalAsset;
   operator: ">=" | "<=" | ">" | "<";
@@ -90,7 +68,8 @@ export type ScreenerInFilter = {
 
 export type ScreenerFilter = ScreenerNumericFilter | ScreenerInFilter;
 
-// 8. Actif fondamental avec score (utilisé par le screener)
+// 6. Actif fondamental avec score (utilisé par le screener)
+
 export interface ScoredAsset extends FundamentalAsset {
   score: number;
   breakdown: FundamentalScoreBreakdown;

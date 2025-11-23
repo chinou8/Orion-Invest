@@ -1,4 +1,28 @@
-import { FundamentalAsset, FundamentalScoreBreakdown, ScoredAsset } from "./types";
+import type { ScoredAsset } from "./types";
+
+export interface FundamentalAsset {
+  isin: string;
+  ticker: string;
+  name: string;
+  country: string;
+  sector: string;
+  currency: string;
+  marketCap: number;
+  pe: number;
+  pb: number;
+  roe: number;
+  roic: number;
+  dividendYield: number;
+  netDebtToEquity: number;
+  [key: string]: string | number | undefined;
+}
+
+export interface FundamentalScoreBreakdown {
+  valuation: number;
+  profitability: number;
+  financialHealth: number;
+  dividend: number;
+}
 
 const clamp = (value: number, min: number, max: number): number =>
   Math.min(max, Math.max(min, value));
