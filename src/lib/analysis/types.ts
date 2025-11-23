@@ -39,17 +39,28 @@ export interface TechnicalSignals {
 
 // 4. Instantané technique (pour graphiques et indicateurs)
 export interface TechnicalSnapshot {
-  closes: number[];
-  smaShort: number[];
-  smaLong: number[];
-  ema: number[];
-  rsi: number[];
-  macd: MACDResult;
-  bollinger: BollingerBands;
-  signals: TechnicalSignals;
+  smaShort: number | null;
+  smaLong: number | null;
+  ema: number | null;
+  rsi: number | null;
+  macd:
+    | {
+        macdLine: number;
+        signalLine: number;
+        histogram: number;
+      }
+    | null;
+  bollinger:
+    | {
+        upper: number;
+        middle: number;
+        lower: number;
+      }
+    | null;
+  signals: string[];
 }
 
-// 5. Actif fondamental
+// 4. Actif fondamental
 export interface FundamentalAsset {
   isin: string;
   ticker: string;
@@ -67,7 +78,7 @@ export interface FundamentalAsset {
   [key: string]: string | number | undefined;
 }
 
-// 6. Décomposition du score fondamental
+// 5. Décomposition du score fondamental
 export interface FundamentalScoreBreakdown {
   valuation: number;
   profitability: number;
@@ -75,7 +86,7 @@ export interface FundamentalScoreBreakdown {
   dividend: number;
 }
 
-// 7. Filtres du screener
+// 6. Filtres du screener
 export type ScreenerNumericFilter = {
   field: keyof FundamentalAsset;
   operator: ">=" | "<=" | ">" | "<";
@@ -90,9 +101,14 @@ export type ScreenerInFilter = {
 
 export type ScreenerFilter = ScreenerNumericFilter | ScreenerInFilter;
 
-// 8. Actif fondamental avec score (utilisé par le screener)
+// 7. Actif fondamental avec score (utilisé par le screener)
 export interface ScoredAsset {
   asset: FundamentalAsset;
   score: number;
   breakdown: FundamentalScoreBreakdown;
+}
+
+// 6. Actif fondamental avec score (utilisé par le screener)
+export interface ScoredAsset extends FundamentalAsset {
+  score?: number;
 }
