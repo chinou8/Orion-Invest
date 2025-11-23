@@ -42,14 +42,52 @@ export interface TechnicalSnapshot {
   signals: string[];
 }
 
-// 4. Actif fondamental (type générique pour l'instant)
+// 4. Actif fondamental
 export interface FundamentalAsset {
-  [key: string]: unknown;
+  isin: string;
+  ticker: string;
+  name: string;
+  country: string;
+  sector: string;
+  currency: string;
+  marketCap: number;
+  pe: number;
+  pb: number;
+  roe: number;
+  roic: number;
+  dividendYield: number;
+  netDebtToEquity: number;
+  [key: string]: string | number | undefined;
 }
 
-// 5. Filtre de screener (type générique pour l'instant)
-export interface ScreenerFilter {
-  [key: string]: unknown;
+// 5. Décomposition du score fondamental
+export interface FundamentalScoreBreakdown {
+  valuation: number;
+  profitability: number;
+  financialHealth: number;
+  dividend: number;
+}
+
+// 6. Filtres du screener
+export type ScreenerNumericFilter = {
+  field: keyof FundamentalAsset;
+  operator: ">=" | "<=" | ">" | "<";
+  value: number;
+};
+
+export type ScreenerInFilter = {
+  field: keyof FundamentalAsset;
+  operator: "in";
+  value: string[];
+};
+
+export type ScreenerFilter = ScreenerNumericFilter | ScreenerInFilter;
+
+// 7. Actif fondamental avec score (utilisé par le screener)
+export interface ScoredAsset {
+  asset: FundamentalAsset;
+  score: number;
+  breakdown: FundamentalScoreBreakdown;
 }
 
 // 6. Actif fondamental avec score (utilisé par le screener)
